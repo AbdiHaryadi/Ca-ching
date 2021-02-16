@@ -135,8 +135,24 @@ public class DefenseSelector extends Selector {
     	return cells;
     }
     
-    private BananaBombArea(Position a){
-    	
+    private List<Cell> BananaAreaInFixedPosition(){
+    	ArrayList<Cell> cells = new ArrayList<>();
+    	cells.add(gameState.map[16][12]);
+    	cells.add(gameState.map[15][13]);
+    	cells.add(gameState.map[14][13]);
+    	cells.add(gameState.map[14][14]);
+    	cells.add(gameState.map[15][15]);
+    	cells.add(gameState.map[16][16]);
+    	cells.add(gameState.map[18][16]);
+    	cells.add(gameState.map[15][17]);
+    	cells.add(gameState.map[16][17]);
+    	cells.add(gameState.map[17][17]);
+    	cells.add(gameState.map[14][18]);
+    	cells.add(gameState.map[15][18]);
+    	cells.add(gameState.map[16][18]);
+    	cells.add(gameState.map[14][19]);
+    	cells.add(gameState.map[15][19]);
+    	cells.add(gameState.map[16][20]);
     }
     		
     private Direction resolveDirection(Position a, Position b) {
