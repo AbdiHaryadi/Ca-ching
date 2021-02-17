@@ -7,9 +7,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Validator {
-    public GameState gameState;
-    public static int bananaCount = 3;
-    public static int snowballCount = 3;
+    private final static int adjacentSquareRange = 2;
+    private final static int bananaBombDamageSquareRange = 4;
+    private final static int bananaBombThrowSquareRange = 25;
+    private final static int snowballDamageSquareRange = 2;
+    private final static int snowballBombThrowSquareRange = 25;
+    private static int bananaCount = 3;
+    private static int snowballCount = 3;
+    
+    private final GameState gameState;
     
     public Validator(GameState gs) {
         this.gameState = gs;
@@ -25,7 +31,8 @@ public class Validator {
                     && (!this.hasOpponentWorm(command.x, command.y))
                     && euclideanSquareDistance(currentWorm.position.x,
                                                 currentWorm.position.y,
-                                                command.x, command.y) <= 2
+                                                command.x, command.y)
+                        <= adjacentSquareRange;
                     && this.isValidCoordinate(command.x, command.y);
             
         } else if (command instanceof ShootCommand) {
@@ -38,10 +45,12 @@ public class Validator {
                 bananaCount--;
                 return currentWorm.profession == "Agent"
                         && this.getMinPlayerWormSquareDistance(command.x,
-                                                                command.y) > 4
+                                                                command.y)
+                            > bananaBombDamageSquareRange
                         && euclideanSquareDistance(currentWorm.position.x,
                                                     currentWorm.position.y,
-                                                    command.x, command.y) <= 25
+                                                    command.x, command.y)
+                            <= bananaBombThrowSquareRange
                         && this.isValidCoordinate(command.x, command.y);
                 
             } else {
@@ -72,7 +81,7 @@ public class Validator {
                                                 command.x, command.y) <= 2;
             
         } else if (command instanceof DoNothingCommand) {
-            return this.gameState.consecutiveDoNothingCount < 12;
+            return false;
             
         } else {
             throw new IllegalArgumentException("Unknown command detected!");
@@ -159,18 +168,21 @@ public class Validator {
         int currX;
         int currY;
         boolean found;
+        int i;
+        final int maxRange = 4; // horizontal, vertikal, maupun diagonal 
         
+        i = 0;
         currX = x + d.x;
         currY = y + d.y;
         found = false;
-        while (this.isValidCoordinate(currX, currY)
-                && (!this.hasOpponentWorm(currX, currY)) && (!found)) {
+        while ((i < 4) && (!this.hasOpponentWorm(currX, currY)) && (!found)) {
             if (this.hasMyWorm(currX, currY)) {
                 found = true;
                 
             } else {
                 currX += d.x;
                 currY += d.y;
+                i++;
                 
             }
             
