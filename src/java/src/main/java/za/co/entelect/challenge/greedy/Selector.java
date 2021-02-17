@@ -1,6 +1,8 @@
 package za.co.entelect.challenge.greedy;
 
-abstract class Selector {
+import za.co.entelect.challenge.command.*;
+
+abstract public class Selector {
     // Mengembalikan true jika masih ada solusi selanjutnya, false jika tidak
     abstract boolean hasNext();
     

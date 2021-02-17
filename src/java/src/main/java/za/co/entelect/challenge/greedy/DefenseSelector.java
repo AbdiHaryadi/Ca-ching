@@ -1,4 +1,4 @@
-package za.co.entelect.challenge;
+package za.co.entelect.challenge.greedy;
 
 import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.*;
@@ -32,10 +32,10 @@ public class DefenseSelector {
     private Worm getFirstWormInRange() {
 
         ArrayList<Cell> cells = new ArrayList<>();
-        for (i=-5;i<=5;i++){
-            for(j=-5;j<=5;j++){
+        for (int i=-5;i<=5;i++){
+            for(int j=-5;j<=5;j++){
             	if(euclideanDistance(0, 0, i, j)<6)
-	  	    cells.add(gameState.map[currentWorm.position.x+i][currentWorm.position.y+j])
+	  	    cells.add(gameState.map[currentWorm.position.x+i][currentWorm.position.y+j]);
 	    }
 	}
 
@@ -102,7 +102,7 @@ public class DefenseSelector {
 	else if (southWestDir.contains(enemyCell)==true){
 	    builder.append("SW");
 	}
-	else if (WestDir.contains(enemyCell)==true){
+	else if (westDir.contains(enemyCell)==true){
 	    builder.append('W');
 	}
 	else if (northWestDir.contains(enemyCell)==true){
@@ -131,7 +131,7 @@ public class DefenseSelector {
     	int c=enemyWorm.position.x;
     	int d=enemyWorm.position.y;
     	
-        if (enemyWorm != null && (a-c==0 || b-d==0 || a-c==b-d ||a-c==-(b-d)) && (enemyWorm.roundsUntilUnfrozen=0)) {
+        if (enemyWorm != null && (a-c==0 || b-d==0 || a-c==b-d ||a-c==-(b-d)) && (enemyWorm.roundsUntilUnfrozen==0)) {
             return new SnowballCommand(enemyWorm.position.x, enemyWorm.position.y);
         }
         else
@@ -154,7 +154,9 @@ public class DefenseSelector {
     }
     
     private Command DigDirt(){
-        for (i=-1;i<=1;i++){
+    	Command result = null;
+
+        for (int i=-1;i<=1;i++){
             if (i!=0){
             	Cell block1=gameState.map[currentWorm.position.x+i][currentWorm.position.y];
             	Cell block2=gameState.map[currentWorm.position.x][currentWorm.position.y+i];
@@ -162,34 +164,38 @@ public class DefenseSelector {
             	Cell block4=gameState.map[currentWorm.position.x-i][currentWorm.position.y+i];
             	Cell block5=gameState.map[currentWorm.position.x+i][currentWorm.position.y-i];
             	if (block1.type==CellType.DIRT) {
-            		return new DigCommand((currentWorm.position.x+i),(currentWorm.position.y));
+            		result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y));
             	}
             	else if(block2.type==CellType.DIRT)
 	            {
-			return new DigCommand((currentWorm.position.x),(currentWorm.position.y+i));
+			result = new DigCommand((currentWorm.position.x),(currentWorm.position.y+i));
 		    }
 		else if(block3.type==CellType.DIRT)
         	{
-		    return new DigCommand((currentWorm.position.x+i),(currentWorm.position.y+i));
+		    result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y+i));
 		}
 		else if(block4.type==CellType.DIRT)
         	{
-		    return new DigCommand((currentWorm.position.x-i),(currentWorm.position.y+i));
+		    result = new DigCommand((currentWorm.position.x-i),(currentWorm.position.y+i));
 		}
 		else if(block5.type==CellType.DIRT)
         	{
-		    return new DigCommand((currentWorm.position.x+i),(currentWorm.position.y-i));
+		    result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y-i));
 		}
 	        else
         	{
-	    	    return new DoNothingCommand();
+	    	    result = new DoNothingCommand();
 		}
 	    }
         }
+
+        return result;
     }
     
     private Command RandomShoot(){
-	int number=random.nextInt(8);
+		Direction d;
+		Random random = new Random();
+    	int number=random.nextInt(8);
         if (number==0) {
             return new ShootCommand(new Direction(0, -1));
         }
@@ -368,4 +374,5 @@ public class DefenseSelector {
         else {
             return RandomShoot();
         }
+}
 }

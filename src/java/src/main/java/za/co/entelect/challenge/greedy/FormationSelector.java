@@ -292,7 +292,11 @@ public class FormationSelector extends Selector {
         }
         
     }
-        
-    
+
+    private boolean isValidCoordinate(int x, int y) {
+        return x >= 0 && x < this.gameState.mapSize
+                && y >= 0 && y < this.gameState.mapSize;
+
+    }
     
 }
