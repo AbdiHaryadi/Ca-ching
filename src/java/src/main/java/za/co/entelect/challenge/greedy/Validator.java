@@ -16,69 +16,67 @@ public class Validator {
         
     }
     
-    public boolean isValidSolution(Solution s) {
-        MyWorm currentWorm = this.getCurrentWorm(s.wormId);
-        String solutionType = s.solutionType;
-        switch (solutionType) {
-            case "move":
-                return this.isAir(s.x, s.y) && (!this.hasMyWorm(s.x, s.y))
-                        && (!this.hasOpponentWorm(s.x, s.y))
+    public boolean isValidSolution(Command command) {
+        MyWorm currentWorm = this.getCurrentWorm();
+        
+        if (command instanceof MoveCommand) {
+            return this.isAir(command.x, command.y)
+                    && (!this.hasMyWorm(command.x, command.y))
+                    && (!this.hasOpponentWorm(command.x, command.y))
+                    && euclideanSquareDistance(currentWorm.position.x,
+                                                currentWorm.position.y,
+                                                command.x, command.y) <= 2
+                    && this.isValidCoordinate(command.x, command.y);
+            
+        } else if (command instanceof ShootCommand) {
+            return !this.isFriendlyFire(currentWorm.position.x,
+                                         currentWorm.position.y,
+                                         command.direction);
+            
+        } else if (command instanceof BananaBombCommand) {
+            if (bananaCount > 0) {
+                bananaCount--;
+                return currentWorm.profession == "Agent"
+                        && this.getMinPlayerWormSquareDistance(command.x,
+                                                                command.y) > 4
                         && euclideanSquareDistance(currentWorm.position.x,
                                                     currentWorm.position.y,
-                                                    s.x, s.y) <= 2
-                        && this.isValidCoordinate(s.x, s.y);
+                                                    command.x, command.y) <= 25
+                        && this.isValidCoordinate(command.x, command.y);
                 
-            case "shoot":
-                return !this.isFriendlyFire(s.x, s.y, s.direction);
+            } else {
+                return false;
                 
-            case "banana":
-                if (bananaCount > 0) {
-                    bananaCount--;
-                    return currentWorm.profession == "Agent"
-                            && this.getMinPlayerWormSquareDistance(s.x, s.y)
-                                > 4
-                            && euclideanSquareDistance(currentWorm.position.x,
-                                                        currentWorm.position.y,
-                                                        s.x, s.y) <= 25
-                            && this.isValidCoordinate(s.x, s.y);
-                    
-                } else {
-                    return false;
-                    
-                }
-                
-                
-            case "snowball":
-                if (snowballCount > 0) {
-                    snowballCount--;
-                    return currentWorm.profession == "Technologist"
-                            && this.getMinPlayerWormSquareDistance(s.x, s.y)
-                                > 2
-                            && euclideanSquareDistance(currentWorm.position.x,
-                                                        currentWorm.position.y,
-                                                        s.x, s.y) <= 25
-                            && this.isValidCoordinate(s.x, s.y);
-                    
-                } else {
-                    return false;
-                    
-                }
-                
-                
-            case "dig":
-                return this.isDirt(s.x, s.y) // termasuk validasi koordinat
+            }
+            
+        } else if (command instanceof SnowballCommand) {
+            if (snowballCount > 0) {
+                snowballCount--;
+                return currentWorm.profession == "Technologist"
+                        && this.getMinPlayerWormSquareDistance(command.x,
+                                                                command.y) > 2
                         && euclideanSquareDistance(currentWorm.position.x,
                                                     currentWorm.position.y,
-                                                    s.x, s.y) <= 2;
+                                                    command.x, command.y) <= 25
+                        && this.isValidCoordinate(command.x, command.y);
                 
-            case "nothing":
-                return this.gameState.consecutiveDoNothingCount < 12;
+            } else {
+                return false;
                 
-            default:
-                throw new IllegalArgumentException(
-                    String.format("Unknown command: %s", s.solutionType)
-                );
-           
+            }
+            
+        } else if (command instanceof DigCommand) {
+            return this.isDirt(command.x, command.y) // termasuk validasi koor.
+                    && euclideanSquareDistance(currentWorm.position.x,
+                                                currentWorm.position.y,
+                                                command.x, command.y) <= 2;
+            
+        } else if (command instanceof DoNothingCommand) {
+            return this.gameState.consecutiveDoNothingCount < 12;
+            
+        } else {
+            throw new IllegalArgumentException("Unknown command detected!");
+            
         }
         
     }
@@ -154,7 +152,9 @@ public class Validator {
         return found;
         
     }
-
+    
+    // Melihat apakah ada friendly fire saat cacing di posisi x, y menembak
+    // dalam arah d
     private boolean isFriendlyFire(int x, int y, Direction d) {
         int currX;
         int currY;
@@ -204,10 +204,10 @@ public class Validator {
         
     }
     
-    // starter-bot function
-    private MyWorm getCurrentWorm(int wormId) {
+    // starter-bot functions
+    private MyWorm getCurrentWorm() {
         return Arrays.stream(this.gameState.myPlayer.worms)
-                .filter(myWorm -> myWorm.id == wormId)
+                .filter(myWorm -> myWorm.id == this.gameState.currentWormId)
                 .findFirst()
                 .get();
     }
@@ -217,8 +217,8 @@ public class Validator {
     }
 
     private boolean isValidCoordinate(int x, int y) {
-        return x >= 0 && x < gameState.mapSize
-                && y >= 0 && y < gameState.mapSize;
+        return x >= 0 && x < this.gameState.mapSize
+                && y >= 0 && y < this.gameState.mapSize;
                 
     }
     

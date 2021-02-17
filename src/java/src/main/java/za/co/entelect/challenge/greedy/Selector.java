@@ -8,6 +8,6 @@ abstract class Selector {
     abstract void next();
     
     // Mengembalikan solusi. Prasyarat: hasNext() telah dipanggil dan bernilai true
-    abstract Solution getSolution();
+    abstract Command getSolution();
     
 }
