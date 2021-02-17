@@ -135,9 +135,25 @@ public class DefenseSelector extends Selector {
     	return cells;
     }
     
+    private List<Cell> ExplotionArea(Position a){
+    	ArrayList<Cell> cells = new ArrayList<>();
+    	for (int i=-2; i<=2; i++){
+    	    if (i!=0){
+    	        cells.add(gameState.map[(a.x)+i][(a.y)]);
+    	        cells.add(gameState.map[(a.x)][(a.y+i)]);
+    	    }
+    	}
+    	cells.add(gameState.map[(a.x)+1][(a.y)+1]);
+    	cells.add(gameState.map[(a.x)+1][(a.y)-1]);
+    	cells.add(gameState.map[(a.x)-1][(a.y)+1]);
+    	cells.add(gameState.map[(a.x)-1][(a.y)-1]);
+    	return cells;
+    }
+    
     private List<Cell> BananaAreaInFixedPosition(){
     	ArrayList<Cell> cells = new ArrayList<>();
     	cells.add(gameState.map[16][12]);
+    	cells.add(gameState.map[15][12]);
     	cells.add(gameState.map[15][13]);
     	cells.add(gameState.map[14][13]);
     	cells.add(gameState.map[14][14]);
@@ -152,6 +168,7 @@ public class DefenseSelector extends Selector {
     	cells.add(gameState.map[16][18]);
     	cells.add(gameState.map[14][19]);
     	cells.add(gameState.map[15][19]);
+    	cells.add(gameState.map[15][20]);
     	cells.add(gameState.map[16][20]);
     }
     		
