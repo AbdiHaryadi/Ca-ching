@@ -19,7 +19,7 @@ public class Bot {
 
     public Command run() {
         Selector selector;
-        Solution tempSolution;
+        Command tempCommand;
         Validator validator;
         boolean stop;
         boolean found;
@@ -35,8 +35,8 @@ public class Bot {
         stop = false;
         found = false;
         do {
-            tempSolution = selector.getSolution();
-            found = validator.isValidSolution(tempSolution);
+            tempCommand = selector.getSolution();
+            found = validator.isValidSolution(tempCommand);
 
             if (found || (!selector.hasNext())) {
                 stop = true;
@@ -49,7 +49,7 @@ public class Bot {
         } while (!stop);
         
         if (found) {
-            return tempSolution.toCommand();
+            return tempCommand;
             
         } else {
             return new DoNothingCommand();
