@@ -1,12 +1,221 @@
-package za.co.entelect.challenge.greedy;
+package za.co.entelect.challenge;
 
-import za.co.entelect.challenge.entities.GameState;
+import za.co.entelect.challenge.command.*;
+import za.co.entelect.challenge.entities.*;
+import za.co.entelect.challenge.enums.CellType;
+import za.co.entelect.challenge.enums.Direction;
 
-public class DefenseSelector extends Selector {
-    // Implementasikan di sini. Bisa buat atribut baru, method baru, bebas.
-    // ...
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class DefenseSelector {
+
+    private int attempt;
     private GameState gameState;
+    private Opponent opponent;
+    private MyWorm currentWorm;
+
+    public DefenseSelector(GameState gameState) {
+        this.attempt = 1;
+        this.gameState = gameState;
+        this.opponent = gameState.opponents[0];
+        this.currentWorm = getCurrentWorm(gameState);
+    }
+
+    private MyWorm getCurrentWorm(GameState gameState) {
+        return Arrays.stream(gameState.myPlayer.worms)
+                .filter(myWorm -> myWorm.id == gameState.currentWormId)
+                .findFirst()
+                .get();
+    }
+
+    private Worm getFirstWormInRange() {
+
+        ArrayList<Cell> cells = new ArrayList<>();
+        for (i=-5;i<=5;i++){
+            for(j=-5;j<=5;j++){
+            	if(euclideanDistance(0, 0, i, j)<6)
+	  	    cells.add(gameState.map[currentWorm.position.x+i][currentWorm.position.y+j])
+	    }
+	}
+
+        for (Worm enemyWorm : opponent.worms) {
+            Cell enemyPosition = gameState.map[(enemyWorm.position.x)][(enemyWorm.position.y)];
+            if (cells.contains(enemyPosition)) {
+                return enemyWorm;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isValidCoordinate(int x, int y) {
+        return x >= 0 && x < gameState.mapSize
+                && y >= 0 && y < gameState.mapSize;
+    }
     
+    private List<Cell> getSurroundingCells(int x, int y) {
+        ArrayList<Cell> cells = new ArrayList<>();
+        for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+                // Don't include the current position
+                if (i != x && j != y && isValidCoordinate(i, j)) {
+                    cells.add(gameState.map[j][i]);
+                }
+            }
+        }
+
+        return cells;
+    }
+
+    private int euclideanDistance(int aX, int aY, int bX, int bY) {
+        return (int) (Math.sqrt(Math.pow(aX - bX, 2) + Math.pow(aY - bY, 2)));
+    }
+
+    private Direction resolveDirection(Position a, Position b) {
+        StringBuilder builder = new StringBuilder();
+
+        Cell enemyCell = gameState.map[(b.x)][(b.y)];
+        List<Cell> northDir = NorthArea(a);
+        List<Cell> northEastDir = NorthEastArea(a);
+        List<Cell> eastDir = EastArea(a);
+        List<Cell> southEastDir = SouthEastArea(a);
+        List<Cell> southDir = SouthArea(a);
+        List<Cell> southWestDir = SouthWestArea(a);
+        List<Cell> westDir = WestArea(a);
+        List<Cell> northWestDir = NorthWestArea(a);
+        if (northDir.contains(enemyCell) == true) {
+            builder.append('N');
+        } 
+        else if (northEastDir.contains(enemyCell)==true) {
+            builder.append("NE");
+        }
+	else if (eastDir.contains(enemyCell)==true){
+	    builder.append('E');
+	}
+	else if (southEastDir.contains(enemyCell)==true){
+	    builder.append("SE");
+	}
+	else if (southDir.contains(enemyCell)==true){
+	    builder.append('S');
+	}
+	else if (southWestDir.contains(enemyCell)==true){
+	    builder.append("SW");
+	}
+	else if (WestDir.contains(enemyCell)==true){
+	    builder.append('W');
+	}
+	else if (northWestDir.contains(enemyCell)==true){
+	    builder.append("NW");
+	}
+	
+        return Direction.valueOf(builder.toString());
+    }
+    
+    private Command BombEnemy(){
+    	Worm enemyWorm = getFirstWormInRange();
+        if (enemyWorm != null) {
+            return new BananaBombCommand(enemyWorm.position.x, enemyWorm.position.y);
+        }
+        else
+        {
+            return new DoNothingCommand();        	
+        }
+        
+    }
+    	
+    private Command FreezeEnemy(){
+    	Worm enemyWorm = getFirstWormInRange();
+    	int a=currentWorm.position.x;
+    	int b=currentWorm.position.y;
+    	int c=enemyWorm.position.x;
+    	int d=enemyWorm.position.y;
+    	
+        if (enemyWorm != null && (a-c==0 || b-d==0 || a-c==b-d ||a-c==-(b-d)) && (enemyWorm.roundsUntilUnfrozen=0)) {
+            return new SnowballCommand(enemyWorm.position.x, enemyWorm.position.y);
+        }
+        else
+        {
+            return new DoNothingCommand();        	
+        }
+    }
+    
+    private Command ShootEnemy(){
+	Worm enemyWorm = getFirstWormInRange();
+	Direction enemyDir = resolveDirection(currentWorm.position, enemyWorm.position);
+    	
+        if (enemyWorm != null && enemyDir != null) {
+            return new ShootCommand(enemyDir);
+        }
+        else
+        {
+	    return new DoNothingCommand();
+	}
+    }
+    
+    private Command DigDirt(){
+        for (i=-1;i<=1;i++){
+            if (i!=0){
+            	Cell block1=gameState.map[currentWorm.position.x+i][currentWorm.position.y];
+            	Cell block2=gameState.map[currentWorm.position.x][currentWorm.position.y+i];
+            	Cell block3=gameState.map[currentWorm.position.x+i][currentWorm.position.y+i];
+            	Cell block4=gameState.map[currentWorm.position.x-i][currentWorm.position.y+i];
+            	Cell block5=gameState.map[currentWorm.position.x+i][currentWorm.position.y-i];
+            	if (block1.type==CellType.DIRT) {
+            		return new DigCommand((currentWorm.position.x+i),(currentWorm.position.y));
+            	}
+            	else if(block2.type==CellType.DIRT)
+	            {
+			return new DigCommand((currentWorm.position.x),(currentWorm.position.y+i));
+		    }
+		else if(block3.type==CellType.DIRT)
+        	{
+		    return new DigCommand((currentWorm.position.x+i),(currentWorm.position.y+i));
+		}
+		else if(block4.type==CellType.DIRT)
+        	{
+		    return new DigCommand((currentWorm.position.x-i),(currentWorm.position.y+i));
+		}
+		else if(block5.type==CellType.DIRT)
+        	{
+		    return new DigCommand((currentWorm.position.x+i),(currentWorm.position.y-i));
+		}
+	        else
+        	{
+	    	    return new DoNothingCommand();
+		}
+	    }
+        }
+    }
+    
+    private Command RandomShoot(){
+	int number=random.nextInt(8);
+        if (number==0) {
+            return new ShootCommand(new Direction(0, -1));
+        }
+        else if (number==1) {
+            return new ShootCommand(new Direction(1, -1));
+        }
+        else if (number==2) {
+            return new ShootCommand(new Direction(1, 0));
+        }
+        else if (number==3) {
+            return new ShootCommand(new Direction(1, 1));
+        }
+        else if (number==4) {
+            return new ShootCommand(new Direction(0, 1));
+        }
+        else if (number==5) {
+            return new ShootCommand(new Direction(-1, 1));
+        }
+        else if (number==6) {
+            return new ShootCommand(new Direction(-1, -0);
+        }
+        else {
+            return new ShootCommand(new Direction(-1, -1));
+        }
+    }    
+	
     private List<Cell> NorthArea(Position a){
     	ArrayList<Cell> cells = new ArrayList<>();
     	for (int i=1; i<=5; i++){
@@ -135,92 +344,28 @@ public class DefenseSelector extends Selector {
     	return cells;
     }
     
-    private List<Cell> ExplotionArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=-2; i<=2; i++){
-    	    if (i!=0){
-    	        cells.add(gameState.map[(a.x)+i][(a.y)]);
-    	        cells.add(gameState.map[(a.x)][(a.y+i)]);
-    	    }
-    	}
-    	cells.add(gameState.map[(a.x)+1][(a.y)+1]);
-    	cells.add(gameState.map[(a.x)+1][(a.y)-1]);
-    	cells.add(gameState.map[(a.x)-1][(a.y)+1]);
-    	cells.add(gameState.map[(a.x)-1][(a.y)-1]);
-    	return cells;
+    public boolean hasNext() {
+        return this.attempt < 5;
     }
     
-    private List<Cell> BananaAreaInFixedPosition(){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	cells.add(gameState.map[16][12]);
-    	cells.add(gameState.map[15][12]);
-    	cells.add(gameState.map[15][13]);
-    	cells.add(gameState.map[14][13]);
-    	cells.add(gameState.map[14][14]);
-    	cells.add(gameState.map[15][15]);
-    	cells.add(gameState.map[16][16]);
-    	cells.add(gameState.map[18][16]);
-    	cells.add(gameState.map[15][17]);
-    	cells.add(gameState.map[16][17]);
-    	cells.add(gameState.map[17][17]);
-    	cells.add(gameState.map[14][18]);
-    	cells.add(gameState.map[15][18]);
-    	cells.add(gameState.map[16][18]);
-    	cells.add(gameState.map[14][19]);
-    	cells.add(gameState.map[15][19]);
-    	cells.add(gameState.map[15][20]);
-    	cells.add(gameState.map[16][20]);
+    public void next() {
+        this.attempt++; 
     }
-    		
-    private Direction resolveDirection(Position a, Position b) {
-        StringBuilder builder = new StringBuilder();
 
-        Cell enemyCell = gameState.map[(b.x)][(b.y)];
-        List<Cell> northDir = NorthArea(a);
-        List<Cell> northEastDir = NorthEastArea(a);
-        List<Cell> eastDir = EastArea(a);
-        List<Cell> southEastDir = SouthEastArea(a);
-        List<Cell> southDir = SouthArea(a);
-        List<Cell> southWestDir = SouthWestArea(a);
-        List<Cell> westDir = WestArea(a);
-        List<Cell> northWestDir = NorthWestArea(a);
-        if (northDir.contains(enemyCell) == true) {
-            builder.append('N');
+    public Command getSolution() {
+        if (this.attempt == 1) {
+            return BombEnemy();
         } 
-        else if (northEastDir.contains(enemyCell)==true) {
-            builder.append("NE");
+        else if (this.attempt == 2) {
+            return FreezeEnemy();
         }
-	else if (eastDir.contains(enemyCell)==true){
-	    builder.append('E');
-	}
-	else if (southEastDir.contains(enemyCell)==true){
-	    builder.append("SE");
-	}
-	else if (southDir.contains(enemyCell)==true){
-	    builder.append('S');
-	}
-	else if (southWestDir.contains(enemyCell)==true){
-	    builder.append("SW");
-	}
-	else if (WestDir.contains(enemyCell)==true){
-	    builder.append('W');
-	}
-	else if (northWestDir.contains(enemyCell)==true){
-	    builder.append("NW");
-	}
-	
-        return Direction.valueOf(builder.toString());
-    }
-    
-    public DefenseSelector(GameState gameState) {
-        // Pastikan setelah dibuat, solusinya telah disediakan setidaknya satu
-        // (sehingga getSolution() bisa digunakan)
-        
-    }
-    
-    public Solution getSolution() {
-        
-        
-    }
-    
+        else if (this.attempt == 3) {
+            return ShootEnemy();
+        }
+        else if (this.attempt == 4) {
+            return DigDirt();
+        }
+        else {
+            return RandomShoot();
+        }
 }
