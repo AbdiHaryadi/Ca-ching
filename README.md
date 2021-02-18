@@ -7,8 +7,8 @@ Ca-ching menggunakan algoritma *greedy* yang bernama Formation and Defense. Maka
 ## Persyaratan
 Sebelum menggunakan *bot* ini, berikut adalah hal-hal yang perlu disediakan sebelumnya:
 - Sistem operasi Windows atau Linux (memungkinkan untuk sistem operasi selain itu, tetapi dalam tahap 5 dalam [Penggunaan](#Penggunaan), perlu ada cara khusus yang tidak dituliskan)
-- Java Development Kit 8 (JDK 8)
-- Entelect Challenge 2019 Worms `starter-pack.zip` (diunduh dari `https://github.com/EntelectChallenge/2019-Worms/releases`)
+- Java SE Development Kit 8 (unduh di [sini](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html))
+- Entelect Challenge 2019 Worms `starter-pack.zip` (unduh di [sini](https://github.com/EntelectChallenge/2019-Worms/releases))
 
 ## Penggunaan
 Ca-ching dapat menghadiri pertarungan dengan cara sebagai berikut:
