@@ -16,7 +16,7 @@ Ca-ching dapat menghadiri pertarungan dengan cara sebagai berikut:
 2. Ekstrak `starter-pack.zip`, dan letakkan foldernya pada direktori tempat repositori juga berada.
 3. Ubah nilai `player-a` dari `game-runner-config.json` di folder `starter-pack` menjadi `../Ca-ching Bot/src/java`.
 4. Jika memiliki bot lain dengan bahasa pemrograman Java untuk dipertarungkan, ubah nilai `player-b` ke direktori tempat `bot.json` berada. Jika tidak, biarkan nilainya.
-5. Jalankan `run.bat` untuk Windows atau `make run` untuk Linux.
+5. Jalankan `run.bat` untuk Windows atau gunakan perintah `make run` untuk Linux.
 
 ## Tentang
 Ca-ching dibuat oleh:
