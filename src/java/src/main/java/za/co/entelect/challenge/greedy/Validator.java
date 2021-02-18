@@ -233,7 +233,7 @@ public class Validator {
                 .findFirst()
                 .get();
     }
-    
+
     private static int euclideanSquareDistance(int aX, int aY, int bX, int bY) {
         return (int) (Math.pow(aX - bX, 2) + Math.pow(aY - bY, 2));
     }
