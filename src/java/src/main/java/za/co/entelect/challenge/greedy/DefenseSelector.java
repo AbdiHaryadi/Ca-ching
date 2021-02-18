@@ -127,8 +127,10 @@ public class DefenseSelector extends Selector {
     	Worm enemyWorm = getFirstWormInRange();
     	int a=currentWorm.position.x;
     	int b=currentWorm.position.y;
-    	int c=enemyWorm.position.x;
-    	int d=enemyWorm.position.y;
+    	if (enemyWorm != null) {
+			int c = enemyWorm.position.x;
+			int d = enemyWorm.position.y;
+		}
     	
         if (enemyWorm != null && (a-c==0 || b-d==0 || a-c==b-d ||a-c==-(b-d)) && (enemyWorm.roundsUntilUnfrozen==0)) {
             return new SnowballCommand(enemyWorm.position.x, enemyWorm.position.y);
@@ -141,7 +143,9 @@ public class DefenseSelector extends Selector {
     
     private Command ShootEnemy(){
 	Worm enemyWorm = getFirstWormInRange();
-	Direction enemyDir = resolveDirection(currentWorm.position, enemyWorm.position);
+	if (enemyWorm != null){
+		Direction enemyDir = resolveDirection(currentWorm.position, enemyWorm.position);
+	}
     	
         if (enemyWorm != null && enemyDir != null) {
             return new ShootCommand(enemyDir);
