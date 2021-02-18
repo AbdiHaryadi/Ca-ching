@@ -93,7 +93,7 @@ public class DefenseSelector extends Selector {
 			d = enemyWorm.position.y;
 		}
     	
-        if (enemyWorm != null && (a-c==0 || b-d==0 || a-c==b-d ||a-c==-(b-d)) && (enemyWorm.roundsUntilUnfrozen==0)) {
+        if (enemyWorm != null  && (enemyWorm.roundsUntilUnfrozen==0)) {
             return new SnowballCommand(enemyWorm.position.x, enemyWorm.position.y);
         }
         else
@@ -118,7 +118,7 @@ public class DefenseSelector extends Selector {
 	}
     }
     
-    private Command DigDirt(){
+   private Command DigDirt(){
     	Command result = null;
 
         for (int i=-1;i<=1;i++){
@@ -130,31 +130,32 @@ public class DefenseSelector extends Selector {
             	Cell block5=gameState.map[currentWorm.position.x+i][currentWorm.position.y-i];
             	if (block1.type==CellType.DIRT) {
             		result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y));
+            		return result;
             	}
             	else if(block2.type==CellType.DIRT)
 	            {
-			result = new DigCommand((currentWorm.position.x),(currentWorm.position.y+i));
-		    }
-		else if(block3.type==CellType.DIRT)
-        	{
-		    result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y+i));
-		}
-		else if(block4.type==CellType.DIRT)
-        	{
-		    result = new DigCommand((currentWorm.position.x-i),(currentWorm.position.y+i));
-		}
-		else if(block5.type==CellType.DIRT)
-        	{
-		    result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y-i));
-		}
-	        else
-        	{
-	    	    result = new DoNothingCommand();
-		}
-	    }
+			        result = new DigCommand((currentWorm.position.x),(currentWorm.position.y+i));
+			        return result;
+		        }
+	    	    else if(block3.type==CellType.DIRT)
+            	{
+            	    result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y+i));
+            	    return result;
+		        }
+		        else if(block4.type==CellType.DIRT)
+        	    {
+		            result = new DigCommand((currentWorm.position.x-i),(currentWorm.position.y+i));
+		            return result;
+        	    }
+		        else if(block5.type==CellType.DIRT)
+        	    {
+		        result = new DigCommand((currentWorm.position.x+i),(currentWorm.position.y-i));
+		        return result;
+		        }
+	        }
         }
 
-        return result;
+        return new DoNothingCommand();
     }
 
     private Command RandomShoot(){
