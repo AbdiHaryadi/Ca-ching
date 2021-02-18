@@ -1,17 +1,32 @@
 package za.co.entelect.challenge.greedy;
 
+import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.GameState;
+import za.co.entelect.challenge.entities.MyWorm;
+import za.co.entelect.challenge.enums.CellType;
+import za.co.entelect.challenge.enums.Direction;
+
+import java.util.Arrays;
 
 public class FormationSelector extends Selector {
     // Implementasikan di sini. Bisa buat atribut baru, method baru, bebas.
     // ...
 
+
     private GameState gameState;
     private int attempt;
-    private int coorX = currentWorm.position.x;
-    private int coorY = currentWorm.position.y;
+    private int coorX;
+    private int coorY;
     private int arahX;
     private int arahY;
+    private MyWorm currentWorm;
+
+    private MyWorm getCurrentWorm() {
+        return Arrays.stream(this.gameState.myPlayer.worms)
+                .filter(myWorm -> myWorm.id == this.gameState.currentWormId)
+                .findFirst()
+                .get();
+    }
 
     private boolean isDirt(int x, int y) {
         if (isValidCoordinate(x, y)) {
@@ -24,64 +39,62 @@ public class FormationSelector extends Selector {
         
     }
 
-    private Solution moveDecision(int a, int b) {
+    private Command moveDecision(int a, int b) {
         if (isDirt(a,b)) {
-            digCommand(a,b);
+            return new DigCommand(a,b);
         }
         else {
-            moveCommand(a,b);
+            return new MoveCommand(a,b);
         }
     }
 
-    public Solution moveSolution() {
-        profession = gameState.myPlayer.worms[i].profession;
+    public Command moveSolution() {
+        String profession = currentWorm.profession;
     /* bergerak diagonal dahulu baru x atau y */
         if (profession=="Commando") {
             if (coorX != 13 && coorY !=16) {
                 if (13 > coorX && 16 > coorY) {
                     this.arahX = 1;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else if (13>coorX && 16<coorY) {
                     this.arahX = 1;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else if (13<coorX && 16<coorY) {
                     this.arahX = -1;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = -1;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
             else if (coorX == 13 && coorY !=16) {
                 if (coorY>16) {
                     this.arahX = 0;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = 0;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
             else {
                 if (coorX>13) {
                     this.arahX = 1;
-                    this.arahY = 0;
-                    moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = -1;
-                    this.arahY = 0;
-                    moveDecision(coorX+arahX,coorY+arahY);
                 }
+                this.arahY = 0;
+                return moveDecision(coorX+arahX,coorY+arahY);
             }
         }
         else if (profession=="Agent") {
@@ -89,169 +102,182 @@ public class FormationSelector extends Selector {
                 if (17 > coorX && 14 > coorY) {
                     this.arahX = 1;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else if (17>coorX && 14<coorY) {
                     this.arahX = 1;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else if (17<coorX && 14<coorY) {
                     this.arahX = -1;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = -1;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
             else if (coorX == 17 && coorY !=14) {
                 if (coorY>14) {
                     this.arahX = 0;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = 0;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
             else {
                 if (coorX>17) {
                     this.arahX = 1;
-                    this.arahY = 0;
-                    moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = -1;
-                    this.arahY = 0;
-                    moveDecision(coorX+arahX,coorY+arahY);
                 }
+                this.arahY = 0;
+                return moveDecision(coorX+arahX,coorY+arahY);
             }
         }
-        else if (profession=="Technologist") {
+        else  { // if (profession=="Technologist")
             if (coorX != 18 && coorY !=19) {
                 if (18 > coorX && 19 > coorY) {
                     this.arahX = 1;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else if (18>coorX && 19<coorY) {
                     this.arahX = 1;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else if (18<coorX && 19<coorY) {
                     this.arahX = -1;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = -1;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
             else if (coorX == 18 && coorY !=19) {
                 if (coorY>19) {
                     this.arahX = 0;
                     this.arahY = 1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = 0;
                     this.arahY = -1;
-                    moveDecision(coorX+arahX,coorY+arahY);
+                    return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
             else {
                 if (coorX>18) {
                     this.arahX = 1;
-                    this.arahY = 0;
-                    moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = -1;
-                    this.arahY = 0;
-                    moveDecision(coorX+arahX,coorY+arahY);
                 }
+                this.arahY = 0;
+                return moveDecision(coorX+arahX,coorY+arahY);
             }
         }
     }
+    private Direction resolveDirection(int aX, int aY, int bX, int bY) {
+        StringBuilder builder = new StringBuilder();
 
-    public Solution solutionAttack(){
-        Direction direction(arahX,arahY);
-        attackCommand(direction);
+        int verticalComponent = bY - aY;
+        int horizontalComponent = bX - aX;
+
+        if (verticalComponent < 0) {
+            builder.append('N');
+        } else if (verticalComponent > 0) {
+            builder.append('S');
+        }
+
+        if (horizontalComponent < 0) {
+            builder.append('W');
+        } else if (horizontalComponent > 0) {
+            builder.append('E');
+        }
+
+        return Direction.valueOf(builder.toString());
     }
 
-    public Solution solutionAltRoute() {
-        profession = gameState.myPlayer.worms[i].profession
-        this.arahX=arahX;
-        this.arahY=arahY;
-        /* */
+    public  Command solutionAttack(){
+        Direction direction = resolveDirection(0,0,arahX,arahY);
+        return new ShootCommand(direction);
+    }
+
+    public Command solutionAltRoute() {
+        String profession = currentWorm.profession;
         if (profession=="Commando") {
             if (arahX != 0 && arahY!=0) {
-                moveCommand(coorX+arahX,coorY+arahY-1);
+                return new MoveCommand(coorX+arahX,coorY+arahY-1);
             }
             else if (arahX!=0 && arahY==0) {
                 if (coorY>16) {
-                    moveCommand(coorX+arahX,coorY+arahY-1);
+                    return new MoveCommand(coorX+arahX,coorY+arahY-1);
                 }
                 else {
-                    moveCommand(coorX+arahX,coorY+arahY+1);
+                    return new MoveCommand(coorX+arahX,coorY+arahY+1);
                 }
             }
-            else if (arahX==0 && arahY!=0) {
+            else  { //if (arahX==0 && arahY!=0)
                 if (coorX>13) {
-                    moveCommand(coorX+arahX-1,coorY+arahY);
+                    return new MoveCommand(coorX+arahX-1,coorY+arahY);
                 }
                 else {
-                    moveCommand(coorX+arahX+1,coorY+arahY);
+                    return new MoveCommand(coorX+arahX+1,coorY+arahY);
                 }
             }
         }
         else if (profession=="Agent") {
             if (arahX != 0 && arahY!=0) {
-                moveCommand(coorX+arahX,coorY+arahY-1);
+                return new MoveCommand(coorX+arahX,coorY+arahY-1);
             }
             else if (arahX!=0 && arahY==0) {
                 if (coorY>14) {
-                    moveCommand(coorX+arahX,coorY+arahY-1);
+                    return new MoveCommand(coorX+arahX,coorY+arahY-1);
                 }
                 else {
-                    moveCommand(coorX+arahX,coorY+arahY+1);
+                    return new MoveCommand(coorX+arahX,coorY+arahY+1);
                 }
             }
-            else if (arahX==0 && arahY!=0) {
+            else  { //if (arahX==0 && arahY!=0)
                 if (coorX>17) {
-                    moveCommand(coorX+arahX-1,coorY+arahY);
+                    return new MoveCommand(coorX+arahX-1,coorY+arahY);
                 }
                 else {
-                    moveCommand(coorX+arahX+1,coorY+arahY);
+                    return new MoveCommand(coorX+arahX+1,coorY+arahY);
                 }
             }
         }
-        else if (profession=="Technologist") {
+        else  { //(profession=="Technologist")
             if (arahX != 0 && arahY!=0) {
-                moveCommand(coorX+arahX,coorY+arahY-1);
+                return new MoveCommand(coorX+arahX,coorY+arahY-1);
             }
             else if (arahX!=0 && arahY==0) {
                 if (coorY>19) {
-                    moveCommand(coorX+arahX,coorY+arahY-1);
+                    return new MoveCommand(coorX+arahX,coorY+arahY-1);
                 }
                 else {
-                    moveCommand(coorX+arahX,coorY+arahY+1);
+                    return new MoveCommand(coorX+arahX,coorY+arahY+1);
                 }
             }
-            else if (arahX==0 && arahY!=0) {
+            else  { //if (arahX==0 && arahY!=0)
                 if (coorX>18) {
-                    moveCommand(coorX+arahX-1,coorY+arahY);
+                    return new MoveCommand(coorX+arahX-1,coorY+arahY);
                 }
                 else {
-                    moveCommand(coorX+arahX+1,coorY+arahY);
+                    return new MoveCommand(coorX+arahX+1,coorY+arahY);
                 }
             }
         }
@@ -261,8 +287,10 @@ public class FormationSelector extends Selector {
 
     public FormationSelector(GameState gs) {
         this.gameState = gs;
+        this.currentWorm = this.getCurrentWorm();
         this.attempt = 1;
-        
+        this.coorX= currentWorm.position.x;
+        this.coorY= currentWorm.position.y;
         this.arahX = 0;
         this.arahY = 0;
     }
@@ -300,3 +328,4 @@ public class FormationSelector extends Selector {
     }
     
 }
+
