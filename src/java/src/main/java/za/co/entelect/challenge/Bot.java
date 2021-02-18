@@ -16,10 +16,6 @@ public class Bot {
     public Bot(GameState gameState) {
         this.gameState = gameState;
         this.currentWorm = this.getCurrentWorm();
-        if (this.gameState.currentRound == 1) {
-            this.gameState.currentWormId = 1;
-
-        }
         
     }
 
@@ -29,7 +25,10 @@ public class Bot {
         Validator validator;
         boolean stop;
         boolean found;
-        
+
+        // update currentWorm
+        this.currentWorm = this.getCurrentWorm();
+
         if (inFixedPosition()) {
             selector = new DefenseSelector(this.gameState);
             
@@ -74,15 +73,15 @@ public class Bot {
             case "Commando":
                 return
                         this.currentWorm.position.x == 13
-                                && this.currentWorm.position.x == 16;
+                                && this.currentWorm.position.y == 16;
             case "Agent":
                 return
                         this.currentWorm.position.x == 17
-                                && this.currentWorm.position.x == 14;
+                                && this.currentWorm.position.y == 14;
             case "Technologist":
                 return
                         this.currentWorm.position.x == 18
-                                && this.currentWorm.position.x == 19;
+                                && this.currentWorm.position.y == 19;
             default:
                 throw new IllegalArgumentException(
                         String.format("Unknown profession: %s", profession)
