@@ -23,7 +23,5 @@ public class Worm {
 
     @SerializedName("roundsUntilUnfrozen")
     public int roundsUntilUnfrozen;
-    
-    @SerializedName("roundsUntilUnfrozen")
-    public int roundsUntilUnfrozen;
+
 }
