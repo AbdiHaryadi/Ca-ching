@@ -10,6 +10,16 @@ public class SnowballCommand implements Command {
         this.y = y;
     }
 
+    public int getX() {
+        return this.x;
+
+    }
+
+    public int getY() {
+        return this.y;
+
+    }
+
     @Override
     public String render() {
         return String.format("snowball %d %d", x, y);

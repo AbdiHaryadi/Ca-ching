@@ -8,7 +8,7 @@ import za.co.entelect.challenge.enums.Direction;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DefenseSelector {
+public class DefenseSelector extends Selector {
 
     private int attempt;
     private GameState gameState;

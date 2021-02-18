@@ -2,8 +2,8 @@ package za.co.entelect.challenge;
 
 import za.co.entelect.challenge.command.*;
 import za.co.entelect.challenge.entities.*;
-import za.co.entelect.challenge.enums.CellType;
-import za.co.entelect.challenge.enums.Direction;
+// import za.co.entelect.challenge.enums.CellType;
+// import za.co.entelect.challenge.enums.Direction;
 import za.co.entelect.challenge.greedy.*;
 
 import java.util.*;
@@ -25,15 +25,16 @@ public class Bot {
         boolean found;
         
         if (isAllPlayerWormsInFixedPosition()) {
-            selector = new DefenseSelector();
+            selector = new DefenseSelector(this.gameState);
             
         } else {
-            selector = new FormationSelector();
+            selector = new FormationSelector(this.gameState);
             
         }
+
+        validator = new Validator(this.gameState);
         
         stop = false;
-        found = false;
         do {
             tempCommand = selector.getSolution();
             found = validator.isValidSolution(tempCommand);

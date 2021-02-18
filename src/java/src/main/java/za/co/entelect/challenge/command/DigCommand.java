@@ -10,6 +10,16 @@ public class DigCommand implements Command {
         this.y = y;
     }
 
+    public int getX() {
+        return this.x;
+
+    }
+
+    public int getY() {
+        return this.y;
+
+    }
+
     @Override
     public String render() {
         return String.format("dig %d %d", x, y);

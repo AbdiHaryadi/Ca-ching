@@ -2,56 +2,60 @@ package za.co.entelect.challenge.greedy;
 
 import za.co.entelect.challenge.entities.*;
 import za.co.entelect.challenge.enums.*;
+import za.co.entelect.challenge.command.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Validator {
     private final static int adjacentSquareRange = 2;
     private final static int bananaBombDamageSquareRange = 4;
     private final static int bananaBombThrowSquareRange = 25;
     private final static int snowballDamageSquareRange = 2;
-    private final static int snowballBombThrowSquareRange = 25;
+    private final static int snowballThrowSquareRange = 25;
     private static int bananaCount = 3;
     private static int snowballCount = 3;
-    
+
     private final GameState gameState;
-    
+
     public Validator(GameState gs) {
         this.gameState = gs;
-        
+
     }
-    
+
     public boolean isValidSolution(Command command) {
         MyWorm currentWorm = this.getCurrentWorm();
-        
+        int x, y;
+        Direction direction;
+
         if (command instanceof MoveCommand) {
-            return this.isAir(command.x, command.y)
-                    && (!this.hasMyWorm(command.x, command.y))
-                    && (!this.hasOpponentWorm(command.x, command.y))
+            x = ((MoveCommand) command).getX();
+            y = ((MoveCommand) command).getY();
+            return this.isAir(x, y)
+                    && (!this.hasMyWorm(x, y))
+                    && (!this.hasOpponentWorm(x, y))
                     && euclideanSquareDistance(currentWorm.position.x,
-                                                currentWorm.position.y,
-                                                command.x, command.y)
-                        <= adjacentSquareRange;
-                    && this.isValidCoordinate(command.x, command.y);
-            
+                                                currentWorm.position.y, x, y)
+                        <= adjacentSquareRange
+                    && this.isValidCoordinate(x, y);
+
         } else if (command instanceof ShootCommand) {
+            direction = ((ShootCommand) command).getDirection();
             return !this.isFriendlyFire(currentWorm.position.x,
-                                         currentWorm.position.y,
-                                         command.direction);
-            
+                                         currentWorm.position.y, direction);
+
         } else if (command instanceof BananaBombCommand) {
             if (bananaCount > 0) {
                 bananaCount--;
-                return currentWorm.profession == "Agent"
-                        && this.getMinPlayerWormSquareDistance(command.x,
-                                                                command.y)
+                x = ((BananaBombCommand) command).getX();
+                y = ((BananaBombCommand) command).getY();
+                return currentWorm.profession.equals("Agent")
+                        && this.getMinPlayerWormSquareDistance(x, y)
                             > bananaBombDamageSquareRange
                         && euclideanSquareDistance(currentWorm.position.x,
                                                     currentWorm.position.y,
-                                                    command.x, command.y)
+                                                    x, y)
                             <= bananaBombThrowSquareRange
-                        && this.isValidCoordinate(command.x, command.y);
+                        && this.isValidCoordinate(x, y);
                 
             } else {
                 return false;
@@ -59,15 +63,19 @@ public class Validator {
             }
             
         } else if (command instanceof SnowballCommand) {
+
             if (snowballCount > 0) {
                 snowballCount--;
-                return currentWorm.profession == "Technologist"
-                        && this.getMinPlayerWormSquareDistance(command.x,
-                                                                command.y) > 2
+                x = ((SnowballCommand) command).getX();
+                y = ((SnowballCommand) command).getY();
+                return currentWorm.profession.equals("Technologist")
+                        && this.getMinPlayerWormSquareDistance(x, y)
+                            > snowballDamageSquareRange
                         && euclideanSquareDistance(currentWorm.position.x,
                                                     currentWorm.position.y,
-                                                    command.x, command.y) <= 25
-                        && this.isValidCoordinate(command.x, command.y);
+                                                    x, y)
+                             <= snowballThrowSquareRange
+                        && this.isValidCoordinate(x, y);
                 
             } else {
                 return false;
@@ -75,10 +83,12 @@ public class Validator {
             }
             
         } else if (command instanceof DigCommand) {
-            return this.isDirt(command.x, command.y) // termasuk validasi koor.
+            x = ((DigCommand) command).getX();
+            y = ((DigCommand) command).getY();
+            return this.isDirt(x, y) // termasuk validasi koor.
                     && euclideanSquareDistance(currentWorm.position.x,
                                                 currentWorm.position.y,
-                                                command.x, command.y) <= 2;
+                                                x, y) <= 2;
             
         } else if (command instanceof DoNothingCommand) {
             return false;
@@ -175,7 +185,7 @@ public class Validator {
         currX = x + d.x;
         currY = y + d.y;
         found = false;
-        while ((i < 4) && (!this.hasOpponentWorm(currX, currY)) && (!found)) {
+        while ((i < maxRange) && (!this.hasOpponentWorm(currX, currY)) && (!found)) {
             if (this.hasMyWorm(currX, currY)) {
                 found = true;
                 

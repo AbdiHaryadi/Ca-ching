@@ -10,6 +10,16 @@ public class MoveCommand implements Command {
         this.y = y;
     }
 
+    public int getX() {
+        return this.x;
+
+    }
+
+    public int getY() {
+        return this.y;
+
+    }
+
     @Override
     public String render() {
         return String.format("move %d %d", x, y);
