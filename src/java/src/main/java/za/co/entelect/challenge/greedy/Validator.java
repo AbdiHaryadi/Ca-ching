@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Validator {
     private final static int adjacentSquareRange = 2;
-    private final static int bananaBombDamageSquareRange = 4;
+    private final static int bananaBombDamageSquareRange = 2;
     private final static int bananaBombThrowSquareRange = 25;
     private final static int snowballDamageSquareRange = 2;
     private final static int snowballThrowSquareRange = 25;
@@ -40,7 +40,7 @@ public class Validator {
 
         } else if (command instanceof ShootCommand) {
             direction = ((ShootCommand) command).getDirection();
-            return !this.isFriendlyFire(currentWorm.position.x,
+            return !this.isBlocked(currentWorm.position.x,
                                          currentWorm.position.y, direction);
 
         } else if (command instanceof BananaBombCommand) {
@@ -174,19 +174,19 @@ public class Validator {
     
     // Melihat apakah ada friendly fire saat cacing di posisi x, y menembak
     // dalam arah d
-    private boolean isFriendlyFire(int x, int y, Direction d) {
+    private boolean isBlocked(int x, int y, Direction d) {
         int currX;
         int currY;
         boolean found;
         int i;
-        final int maxRange = 4; // horizontal, vertikal, maupun diagonal 
+        final int maxRange = (d.x == 0 || d.y == 0) ? 4 : 3;
         
         i = 0;
         currX = x + d.x;
         currY = y + d.y;
         found = false;
         while ((i < maxRange) && (!this.hasOpponentWorm(currX, currY)) && (!found)) {
-            if (this.hasMyWorm(currX, currY)) {
+            if (this.hasMyWorm(currX, currY) || (!this.isAir(currX, currY))) {
                 found = true;
                 
             } else {
