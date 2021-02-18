@@ -6,20 +6,17 @@ Ca-ching menggunakan algoritma *greedy* yang bernama Formation and Defense. Maka
 
 ## Persyaratan
 Sebelum menggunakan *bot* ini, berikut adalah hal-hal yang perlu disediakan sebelumnya:
-- Sistem operasi Windows atau Linux (memungkinkan untuk sistem operasi selain itu, tetapi dalam tahap 6 dalam [Penggunaan](#Penggunaan), perlu ada cara khusus yang tidak dituliskan)
+- Sistem operasi Windows atau Linux (memungkinkan untuk sistem operasi selain itu, tetapi dalam tahap 5 dalam [Penggunaan](#Penggunaan), perlu ada cara khusus yang tidak dituliskan)
 - Java Development Kit 8 (JDK 8)
 - Entelect Challenge 2019 Worms `starter-pack.zip` (diunduh dari `https://github.com/EntelectChallenge/2019-Worms/releases`)
 
 ## Penggunaan
 Ca-ching dapat menghadiri pertarungan dengan cara sebagai berikut:
 1. Atur atau ubah versi Java yang digunakan menjadi JDK 8. Setiap sistem operasi memiliki cara yang berbeda-beda.
-2. Ekstrak `starter-pack.zip`.
-3. Salin folder `src` dari repositori ini ke folder hasil ekstrak sebelumnya.*
-4. Ubah nilai `player-a` dari `game-runner-config.json` di folder `starter-pack` menjadi `./src/java`. 
-5. Jika memiliki bot lain dengan bahasa pemrograman Java untuk dipertarungkan, ubah nilai `player-b` ke direktori tempat `bot.json` berada.
-6. Jalankan `run.bat` untuk Windows atau `make run` untuk Linux.
-
-*) Jika folder `src` ditempatkan pada tempat yang lain, sesuaikan nilainya berdasarkan direktori tempat bot.json-nya berada.
+2. Ekstrak `starter-pack.zip`, dan letakkan foldernya pada direktori tempat repositori juga berada.
+3. Ubah nilai `player-a` dari `game-runner-config.json` di folder `starter-pack` menjadi `../Ca-ching Bot/src/java`.
+4. Jika memiliki bot lain dengan bahasa pemrograman Java untuk dipertarungkan, ubah nilai `player-b` ke direktori tempat `bot.json` berada. Jika tidak, biarkan nilainya.
+5. Jalankan `run.bat` untuk Windows atau `make run` untuk Linux.
 
 ## Tentang
 Ca-ching dibuat oleh:
