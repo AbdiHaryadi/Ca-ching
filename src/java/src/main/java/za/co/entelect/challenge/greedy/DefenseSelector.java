@@ -106,7 +106,11 @@ public class DefenseSelector extends Selector {
 	}
 	else if (northWestDir.contains(enemyCell)==true){
 	    builder.append("NW");
+	} else {
+		return null;
+
 	}
+	// tidak null
 	
         return Direction.valueOf(builder.toString());
     }
