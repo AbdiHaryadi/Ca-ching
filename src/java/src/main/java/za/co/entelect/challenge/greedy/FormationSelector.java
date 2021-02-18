@@ -77,12 +77,12 @@ public class FormationSelector extends Selector {
             else if (coorX == 13 && coorY !=16) {
                 if (coorY>16) {
                     this.arahX = 0;
-                    this.arahY = 1;
+                    this.arahY = -1;
                     return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = 0;
-                    this.arahY = -1;
+                    this.arahY = 1;
                     return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
@@ -123,12 +123,12 @@ public class FormationSelector extends Selector {
             else if (coorX == 17 && coorY !=14) {
                 if (coorY>14) {
                     this.arahX = 0;
-                    this.arahY = 1;
+                    this.arahY = -1;
                     return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = 0;
-                    this.arahY = -1;
+                    this.arahY = 1;
                     return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
@@ -169,12 +169,12 @@ public class FormationSelector extends Selector {
             else if (coorX == 18 && coorY !=19) {
                 if (coorY>19) {
                     this.arahX = 0;
-                    this.arahY = 1;
+                    this.arahY = -1;
                     return moveDecision(coorX+arahX,coorY+arahY);
                 }
                 else {
                     this.arahX = 0;
-                    this.arahY = -1;
+                    this.arahY = 1;
                     return moveDecision(coorX+arahX,coorY+arahY);
                 }
             }
