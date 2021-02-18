@@ -6,7 +6,6 @@ import za.co.entelect.challenge.enums.CellType;
 import za.co.entelect.challenge.enums.Direction;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DefenseSelector extends Selector {
 
@@ -191,35 +190,12 @@ public class DefenseSelector extends Selector {
 
         return result;
     }
-    
+
     private Command RandomShoot(){
-		Direction d;
-		Random random = new Random();
-    	int number=random.nextInt(8);
-        if (number==0) {
-            return new ShootCommand(new Direction(0, -1));
-        }
-        else if (number==1) {
-            return new ShootCommand(new Direction(1, -1));
-        }
-        else if (number==2) {
-            return new ShootCommand(new Direction(1, 0));
-        }
-        else if (number==3) {
-            return new ShootCommand(new Direction(1, 1));
-        }
-        else if (number==4) {
-            return new ShootCommand(new Direction(0, 1));
-        }
-        else if (number==5) {
-            return new ShootCommand(new Direction(-1, 1));
-        }
-        else if (number==6) {
-            return new ShootCommand(new Direction(-1, -0);
-        }
-        else {
-            return new ShootCommand(new Direction(-1, -1));
-        }
+		StringBuilder builder = new StringBuilder();
+		builder.append('N');
+		Direction d=Direction.valueOf(builder.toString());
+		return new ShootCommand(d);
     }    
 	
     private List<Cell> NorthArea(Position a){
