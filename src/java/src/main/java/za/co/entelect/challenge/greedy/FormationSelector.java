@@ -51,7 +51,7 @@ public class FormationSelector extends Selector {
     public Command moveSolution() {
         String profession = currentWorm.profession;
     /* bergerak diagonal dahulu baru x atau y */
-        if (profession=="Commando") {
+        if (profession.equals("Commando")) {
             if (coorX != 13 && coorY !=16) {
                 if (13 > coorX && 16 > coorY) {
                     this.arahX = 1;
@@ -97,7 +97,7 @@ public class FormationSelector extends Selector {
                 return moveDecision(coorX+arahX,coorY+arahY);
             }
         }
-        else if (profession=="Agent") {
+        else if (profession.equals("Agent")) {
             if (coorX != 17 && coorY !=14) {
                 if (17 > coorX && 14 > coorY) {
                     this.arahX = 1;
@@ -143,7 +143,7 @@ public class FormationSelector extends Selector {
                 return moveDecision(coorX+arahX,coorY+arahY);
             }
         }
-        else  { // if (profession=="Technologist")
+        else  { // if (profession.equals("Technologist"))
             if (coorX != 18 && coorY !=19) {
                 if (18 > coorX && 19 > coorY) {
                     this.arahX = 1;
@@ -218,7 +218,7 @@ public class FormationSelector extends Selector {
 
     public Command solutionAltRoute() {
         String profession = currentWorm.profession;
-        if (profession=="Commando") {
+        if (profession.equals("Commando")) {
             if (arahX != 0 && arahY!=0) {
                 return new MoveCommand(coorX+arahX,coorY+arahY-1);
             }
@@ -239,7 +239,7 @@ public class FormationSelector extends Selector {
                 }
             }
         }
-        else if (profession=="Agent") {
+        else if (profession.equals("Agent")) {
             if (arahX != 0 && arahY!=0) {
                 return new MoveCommand(coorX+arahX,coorY+arahY-1);
             }
@@ -260,7 +260,7 @@ public class FormationSelector extends Selector {
                 }
             }
         }
-        else  { //(profession=="Technologist")
+        else  { //(profession.equals("Technologist"))
             if (arahX != 0 && arahY!=0) {
                 return new MoveCommand(coorX+arahX,coorY+arahY-1);
             }
