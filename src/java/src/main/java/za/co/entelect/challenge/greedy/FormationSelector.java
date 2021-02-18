@@ -88,10 +88,10 @@ public class FormationSelector extends Selector {
             }
             else {
                 if (coorX>13) {
-                    this.arahX = 1;
+                    this.arahX = -1;
                 }
                 else {
-                    this.arahX = -1;
+                    this.arahX = 1;
                 }
                 this.arahY = 0;
                 return moveDecision(coorX+arahX,coorY+arahY);
@@ -134,10 +134,10 @@ public class FormationSelector extends Selector {
             }
             else {
                 if (coorX>17) {
-                    this.arahX = 1;
+                    this.arahX = -1;
                 }
                 else {
-                    this.arahX = -1;
+                    this.arahX = 1;
                 }
                 this.arahY = 0;
                 return moveDecision(coorX+arahX,coorY+arahY);
@@ -180,10 +180,10 @@ public class FormationSelector extends Selector {
             }
             else {
                 if (coorX>18) {
-                    this.arahX = 1;
+                    this.arahX = -1;
                 }
                 else {
-                    this.arahX = -1;
+                    this.arahX = 1;
                 }
                 this.arahY = 0;
                 return moveDecision(coorX+arahX,coorY+arahY);
