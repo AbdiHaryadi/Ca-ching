@@ -6,6 +6,7 @@ import za.co.entelect.challenge.enums.CellType;
 import za.co.entelect.challenge.enums.Direction;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DefenseSelector extends Selector {
 
@@ -30,6 +31,24 @@ public class DefenseSelector extends Selector {
 
     private Worm getFirstWormInRange() {
 
+        Set<String> cells = constructFireDirectionLines(currentWorm.weapon.range)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(cell -> String.format("%d_%d", cell.x, cell.y))
+                .collect(Collectors.toSet());
+
+        for (Worm enemyWorm : opponent.worms) {
+            String enemyPosition = String.format("%d_%d", enemyWorm.position.x, enemyWorm.position.y);
+            if (cells.contains(enemyPosition)) {
+                return enemyWorm;
+            }
+        }
+
+        return null;
+    }	
+	
+    private Worm getFirstWormInArea() {
+
         ArrayList<Cell> cells = new ArrayList<>();
         for (int i=-5;i<=5;i++){
             for(int j=-5;j<=5;j++){
@@ -48,75 +67,12 @@ public class DefenseSelector extends Selector {
         return null;
     }
 
-    private boolean isValidCoordinate(int x, int y) {
-        return x >= 0 && x < gameState.mapSize
-                && y >= 0 && y < gameState.mapSize;
-    }
-    
-    private List<Cell> getSurroundingCells(int x, int y) {
-        ArrayList<Cell> cells = new ArrayList<>();
-        for (int i = x - 1; i <= x + 1; i++) {
-            for (int j = y - 1; j <= y + 1; j++) {
-                // Don't include the current position
-                if (i != x && j != y && isValidCoordinate(i, j)) {
-                    cells.add(gameState.map[j][i]);
-                }
-            }
-        }
-
-        return cells;
-    }
-
     private int euclideanDistance(int aX, int aY, int bX, int bY) {
         return (int) (Math.sqrt(Math.pow(aX - bX, 2) + Math.pow(aY - bY, 2)));
     }
-
-    private Direction resolveDirection(Position a, Position b) {
-        StringBuilder builder = new StringBuilder();
-
-        Cell enemyCell = gameState.map[(b.x)][(b.y)];
-        List<Cell> northDir = NorthArea(a);
-        List<Cell> northEastDir = NorthEastArea(a);
-        List<Cell> eastDir = EastArea(a);
-        List<Cell> southEastDir = SouthEastArea(a);
-        List<Cell> southDir = SouthArea(a);
-        List<Cell> southWestDir = SouthWestArea(a);
-        List<Cell> westDir = WestArea(a);
-        List<Cell> northWestDir = NorthWestArea(a);
-        if (northDir.contains(enemyCell) == true) {
-            builder.append('N');
-        } 
-        else if (northEastDir.contains(enemyCell)==true) {
-            builder.append("NE");
-        }
-	else if (eastDir.contains(enemyCell)==true){
-	    builder.append('E');
-	}
-	else if (southEastDir.contains(enemyCell)==true){
-	    builder.append("SE");
-	}
-	else if (southDir.contains(enemyCell)==true){
-	    builder.append('S');
-	}
-	else if (southWestDir.contains(enemyCell)==true){
-	    builder.append("SW");
-	}
-	else if (westDir.contains(enemyCell)==true){
-	    builder.append('W');
-	}
-	else if (northWestDir.contains(enemyCell)==true){
-	    builder.append("NW");
-	} else {
-		return null;
-
-	}
-	// tidak null
-	
-        return Direction.valueOf(builder.toString());
-    }
     
     private Command BombEnemy(){
-    	Worm enemyWorm = getFirstWormInRange();
+    	Worm enemyWorm = getFirstWormInArea();
         if (enemyWorm != null) {
             return new BananaBombCommand(enemyWorm.position.x, enemyWorm.position.y);
         }
@@ -208,132 +164,60 @@ public class DefenseSelector extends Selector {
 		return new ShootCommand(d);
     }    
 	
-    private List<Cell> NorthArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=5; i++){
-    	    if ((a.y)-i>=0){
-    	        cells.add(gameState.map[(a.x)][(a.y)-i]);
-    	    }
-    	    else if (i>1 && (a.y)-i>=0 && (a.x)+1<=32){
-		cells.add(gameState.map[(a.x)+1][(a.y)-i]);
-	    }
-	    else if (i>1 && (a.y)-i>=0 && (a.x)-1>=0){
-		cells.add(gameState.map[(a.x)-1][(a.y)-i]);
-	    }
-    	}
-    	return cells;
+    private List<List<Cell>> constructFireDirectionLines(int range) {
+        List<List<Cell>> directionLines = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
+            List<Cell> directionLine = new ArrayList<>();
+            for (int directionMultiplier = 1; directionMultiplier <= range; directionMultiplier++) {
+
+                int coordinateX = currentWorm.position.x + (directionMultiplier * direction.x);
+                int coordinateY = currentWorm.position.y + (directionMultiplier * direction.y);
+
+                if (!isValidCoordinate(coordinateX, coordinateY)) {
+                    break;
+                }
+
+                if (euclideanDistance(currentWorm.position.x, currentWorm.position.y, coordinateX, coordinateY) > range) {
+                    break;
+                }
+
+                Cell cell = gameState.map[coordinateY][coordinateX];
+                if (cell.type != CellType.AIR) {
+                    break;
+                }
+
+                directionLine.add(cell);
+            }
+            directionLines.add(directionLine);
+        }
+
+        return directionLines;
     }
     
-    private List<Cell> NorthEastArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=4; i++){
-    	    if ((a.x)+i<=32 && (a.y)-i>=0){
-    	        cells.add(gameState.map[(a.x)+i][(a.y)-i]);
-    	    }
-    	    else if (i>1 && (a.y)-i>=0 && (a.x)+i+1<=32){
-		cells.add(gameState.map[(a.x)+i+1][(a.y)-i]);
-	    }
-	    else if (i>1 && (a.y)-i-1>=0 && (a.x)+i<=32){
-		cells.add(gameState.map[(a.x)+i][(a.y)-i-1]);
-	    }
-    	}
-    	return cells;
+    private boolean isValidCoordinate(int x, int y) {
+        return x >= 0 && x < gameState.mapSize
+                && y >= 0 && y < gameState.mapSize;
     }
-    
-    private List<Cell> SouthArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=5; i++){
-    	    if ((a.y)+i<=32){
-    	        cells.add(gameState.map[(a.x)][(a.y)+i]);
-    	    }
-    	    else if (i>1 && (a.y)+i<=32 && (a.x)+1<=32){
-		cells.add(gameState.map[(a.x)+1][(a.y)+i]);
-	    }
-	    else if (i>1 && (a.y)+i<=32 && (a.x)-1>=0){
-		cells.add(gameState.map[(a.x)-1][(a.y)+i]);
-	    }
-    	}
-    	return cells;
-    }
-    
-    private List<Cell> SouthEastArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=4; i++){
-    	    if ((a.x)+i<=32 && (a.y)+i<=32){
-    	        cells.add(gameState.map[(a.x)+i][(a.y)+i]);
-    	    }
-    	    else if (i>1 && (a.y)+i<=32 && (a.x)+i+1<=32){
-		cells.add(gameState.map[(a.x)+i+1][(a.y)+i]);
-	    }
-	    else if (i>1 && (a.y)+i+1<=32 && (a.x)+i<=32){
-		cells.add(gameState.map[(a.x)+i][(a.y)+i+1]);
-	    }
-    	}
-    	return cells;
-    }
-    
-    private List<Cell> EastArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=5; i++){
-    	    if ((a.x)-i>=0){
-    	        cells.add(gameState.map[(a.x)-i][(a.y)]);
-    	    }
-    	    else if (i>1 && (a.x)-i>=0 && (a.y)+1<=32){
-		cells.add(gameState.map[(a.x)-i][(a.y)+1]);
-	    }
-	    else if (i>1 && (a.x)-i>=0 && (a.y)-1>=0){
-		cells.add(gameState.map[(a.x)-i][(a.y)-1]);
-	    }
-    	}
-    	return cells;
-    }
-    
-    private List<Cell> SouthWestArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=4; i++){
-    	    if ((a.x)-i>=0 && (a.y)+i<=32){
-    	        cells.add(gameState.map[(a.x)-i][(a.y)+i]);
-    	    }
-    	    else if (i>1 && (a.y)+i<=32 && (a.x)-i-1>=0){
-		cells.add(gameState.map[(a.x)-i-1][(a.y)+i]);
-	    }
-	    else if (i>1 && (a.y)+i+1<=32 && (a.x)-i>=0){
-		cells.add(gameState.map[(a.x)-i][(a.y)+i+1]);
-	    }
-    	}
-    	return cells;
-    }
-    
-    private List<Cell> WestArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=5; i++){
-    	    if ((a.x)+i<=32){
-    	        cells.add(gameState.map[(a.x)+i][(a.y)]);
-    	    }
-    	    else if (i>1 && (a.x)+i<=32 && (a.y)+1<=32){
-		cells.add(gameState.map[(a.x)+i][(a.y)+1]);
-	    }
-	    else if (i>1 && (a.x)+i<=32 && (a.y)-1>=0){
-		cells.add(gameState.map[(a.x)+i][(a.y)-1]);
-	    }
-    	}
-    	return cells;
-    }
-    
-    private List<Cell> NorthWestArea(Position a){
-    	ArrayList<Cell> cells = new ArrayList<>();
-    	for (int i=1; i<=4; i++){
-    	    if ((a.x)-i>=0 && (a.y)-i>=0){
-    	        cells.add(gameState.map[(a.x)-i][(a.y)-i]);
-    	    }
-    	    else if (i>1 && (a.y)-i>=0 && (a.x)-i-1>=0){
-		cells.add(gameState.map[(a.x)-i-1][(a.y)-i]);
-	    }
-	    else if (i>1 && (a.y)-i-1>=0 && (a.x)-i>=0){
-		cells.add(gameState.map[(a.x)-i][(a.y)-i-1]);
-	    }
-    	}
-    	return cells;
+
+    private Direction resolveDirection(Position a, Position b) {
+        StringBuilder builder = new StringBuilder();
+
+        int verticalComponent = b.y - a.y;
+        int horizontalComponent = b.x - a.x;
+
+        if (verticalComponent < 0) {
+            builder.append('N');
+        } else if (verticalComponent > 0) {
+            builder.append('S');
+        }
+
+        if (horizontalComponent < 0) {
+            builder.append('W');
+        } else if (horizontalComponent > 0) {
+            builder.append('E');
+        }
+
+        return Direction.valueOf(builder.toString());
     }
     
     public boolean hasNext() {
