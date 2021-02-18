@@ -11,9 +11,15 @@ import java.util.stream.Collectors;
 
 public class Bot {
     private GameState gameState;
+    private MyWorm currentWorm;
     
     public Bot(GameState gameState) {
         this.gameState = gameState;
+        this.currentWorm = this.getCurrentWorm();
+        if (this.gameState.currentRound == 1) {
+            this.gameState.currentWormId = 1;
+
+        }
         
     }
 
@@ -24,7 +30,7 @@ public class Bot {
         boolean stop;
         boolean found;
         
-        if (isAllPlayerWormsInFixedPosition()) {
+        if (inFixedPosition()) {
             selector = new DefenseSelector(this.gameState);
             
         } else {
@@ -59,48 +65,38 @@ public class Bot {
         
     }
     
-    private boolean isAllPlayerWormsInFixedPosition() {
+    private boolean inFixedPosition() {
         // Posisi: Commando: (13,16), Agent: (17, 14), Techno: (18, 19)
-        int totalWorm;
-        int i;
         String profession;
-        boolean inFixedPosition;
-        
-        totalWorm = 3;
-        inFixedPosition = true;
-        i = 0;
-        while (i < totalWorm && inFixedPosition) {
-            profession = gameState.myPlayer.worms[i].profession;
-            switch (profession) {
-                case "Commando":
-                    inFixedPosition =
-                        gameState.myPlayer.worms[i].position.x == 13
-                        && gameState.myPlayer.worms[i].position.x == 16;
-                    break;
-                case "Agent":
-                    inFixedPosition =
-                        gameState.myPlayer.worms[i].position.x == 17
-                        && gameState.myPlayer.worms[i].position.x == 14;
-                    break;
-                case "Technologist":
-                    inFixedPosition =
-                        gameState.myPlayer.worms[i].position.x == 18
-                        && gameState.myPlayer.worms[i].position.x == 19;
-                    break;
-                default:
-                    throw new IllegalArgumentException(
+
+        profession = this.currentWorm.profession;
+        switch (profession) {
+            case "Commando":
+                return
+                        this.currentWorm.position.x == 13
+                                && this.currentWorm.position.x == 16;
+            case "Agent":
+                return
+                        this.currentWorm.position.x == 17
+                                && this.currentWorm.position.x == 14;
+            case "Technologist":
+                return
+                        this.currentWorm.position.x == 18
+                                && this.currentWorm.position.x == 19;
+            default:
+                throw new IllegalArgumentException(
                         String.format("Unknown profession: %s", profession)
-                    );
-            }
-            
-            i++;
-            
+                );
+
         }
-        
-        return inFixedPosition;
-        
-        
-        
+
+    }
+
+    private MyWorm getCurrentWorm() {
+        return Arrays.stream(this.gameState.myPlayer.worms)
+                .filter(myWorm -> myWorm.id == this.gameState.currentWormId)
+                .findFirst()
+                .get();
     }
     
 }

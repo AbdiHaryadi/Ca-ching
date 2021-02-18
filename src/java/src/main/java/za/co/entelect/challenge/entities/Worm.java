@@ -20,5 +20,8 @@ public class Worm {
     
     @SerializedName("profession")
     public String profession;
+
+    @SerializedName("roundsUntilUnfrozen")
+    public int roundsUntilUnfrozen;
     
 }
